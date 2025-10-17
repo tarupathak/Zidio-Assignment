@@ -39,7 +39,6 @@ interface Resume {
   projects: Project[];
 }
 
-
 export default function Home() {
   const [resume, setResume] = useState<Resume>({
     name: "John Doe",
@@ -75,6 +74,63 @@ export default function Home() {
     });
   };
 
+  const addEducation = () => {
+    setResume(prev => ({
+      ...prev,
+      education: [...prev.education, { degree: "", school: "", gpa: "", period: "" }]
+    }));
+  };
+
+  const removeEducation = (index: number) => {
+    setResume(prev => ({
+      ...prev,
+      education: prev.education.filter((_, i) => i !== index)
+    }));
+  };
+
+  const addExperience = () => {
+    setResume(prev => ({
+      ...prev,
+      experience: [...prev.experience, { title: "", period: "", details: [""] }]
+    }));
+  };
+
+  const removeExperience = (index: number) => {
+    setResume(prev => ({
+      ...prev,
+      experience: prev.experience.filter((_, i) => i !== index)
+    }));
+  };
+
+  const addProject = () => {
+    setResume(prev => ({
+      ...prev,
+      projects: [...prev.projects, { title: "", link: "", details: [""] }]
+    }));
+  };
+
+  const removeProject = (index: number) => {
+    setResume(prev => ({
+      ...prev,
+      projects: prev.projects.filter((_, i) => i !== index)
+    }));
+  };
+
+  const addDetail = (section: "experience" | "projects", idx: number) => {
+    setResume(prev => {
+      const updated: any = { ...prev };
+      updated[section][idx].details.push("");
+      return updated;
+    });
+  };
+
+  const removeDetail = (section: "experience" | "projects", idx: number, detailIdx: number) => {
+    setResume(prev => {
+      const updated: any = { ...prev };
+      updated[section][idx].details = updated[section][idx].details.filter((_: any, i: number) => i !== detailIdx);
+      return updated;
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
@@ -111,21 +167,211 @@ export default function Home() {
             />
           </div>
 
-          <button className="px-6 py-2 bg-blue-600 text-white rounded-lg">Download PDF</button>
+          {/* Education */}
+          <div className="mt-4">
+            <h3 className="font-semibold text-gray-900 text-lg">Education</h3>
+            {resume.education.map((edu, idx) => (
+              <div key={idx} className="space-y-2 border p-3 rounded-lg">
+                <input
+                  type="text"
+                  value={edu.degree}
+                  onChange={(e) => handleChange(`education.${idx}.degree`, e.target.value)}
+                  placeholder="Degree"
+                  className="w-full px-4 py-2 border rounded-xl"
+                />
+                <input
+                  type="text"
+                  value={edu.school}
+                  onChange={(e) => handleChange(`education.${idx}.school`, e.target.value)}
+                  placeholder="School/University"
+                  className="w-full px-4 py-2 border rounded-xl"
+                />
+                <input
+                  type="text"
+                  value={edu.gpa}
+                  onChange={(e) => handleChange(`education.${idx}.gpa`, e.target.value)}
+                  placeholder="GPA/Score"
+                  className="w-full px-4 py-2 border rounded-xl"
+                />
+                <input
+                  type="text"
+                  value={edu.period}
+                  onChange={(e) => handleChange(`education.${idx}.period`, e.target.value)}
+                  placeholder="Period"
+                  className="w-full px-4 py-2 border rounded-xl"
+                />
+                <button
+                  onClick={() => removeEducation(idx)}
+                  className="px-4 py-1 text-red-600 border border-red-600 rounded-lg mt-2"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+            <button
+              onClick={addEducation}
+              className="px-4 py-2 mt-2 bg-green-600 text-white rounded-lg"
+            >
+              Add Education
+            </button>
+          </div>
+
+          {/* Experience */}
+          <div className="mt-4">
+            <h3 className="font-semibold text-gray-900 text-lg">Experience</h3>
+            {resume.experience.map((exp, idx) => (
+              <div key={idx} className="space-y-2 border p-3 rounded-lg">
+                <input
+                  type="text"
+                  value={exp.title}
+                  onChange={(e) => handleChange(`experience.${idx}.title`, e.target.value)}
+                  placeholder="Job Title / Company"
+                  className="w-full px-4 py-2 border rounded-xl"
+                />
+                <input
+                  type="text"
+                  value={exp.period}
+                  onChange={(e) => handleChange(`experience.${idx}.period`, e.target.value)}
+                  placeholder="Period"
+                  className="w-full px-4 py-2 border rounded-xl"
+                />
+                {exp.details.map((det, dIdx) => (
+                  <div key={dIdx} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={det}
+                      onChange={(e) => handleChange(`experience.${idx}.details.${dIdx}`, e.target.value)}
+                      placeholder="Detail"
+                      className="w-full px-4 py-2 border rounded-xl"
+                    />
+                    <button
+                      onClick={() => removeDetail("experience", idx, dIdx)}
+                      className="px-3 py-1 text-red-600 border border-red-600 rounded-lg"
+                    >
+                      X
+                    </button>
+                  </div>
+                ))}
+                <button
+                  onClick={() => addDetail("experience", idx)}
+                  className="px-3 py-1 bg-blue-600 text-white rounded-lg"
+                >
+                  Add Detail
+                </button>
+                <button
+                  onClick={() => removeExperience(idx)}
+                  className="px-4 py-1 text-red-600 border border-red-600 rounded-lg mt-2"
+                >
+                  Remove Experience
+                </button>
+              </div>
+            ))}
+            <button
+              onClick={addExperience}
+              className="px-4 py-2 mt-2 bg-green-600 text-white rounded-lg"
+            >
+              Add Experience
+            </button>
+          </div>
+
+          {/* Projects */}
+          <div className="mt-4">
+            <h3 className="font-semibold text-gray-900 text-lg">Projects</h3>
+            {resume.projects.map((proj, idx) => (
+              <div key={idx} className="space-y-2 border p-3 rounded-lg">
+                <input
+                  type="text"
+                  value={proj.title}
+                  onChange={(e) => handleChange(`projects.${idx}.title`, e.target.value)}
+                  placeholder="Project Title"
+                  className="w-full px-4 py-2 border rounded-xl"
+                />
+                <input
+                  type="text"
+                  value={proj.link}
+                  onChange={(e) => handleChange(`projects.${idx}.link`, e.target.value)}
+                  placeholder="Project Link"
+                  className="w-full px-4 py-2 border rounded-xl"
+                />
+                {proj.details.map((det, dIdx) => (
+                  <div key={dIdx} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={det}
+                      onChange={(e) => handleChange(`projects.${idx}.details.${dIdx}`, e.target.value)}
+                      placeholder="Detail"
+                      className="w-full px-4 py-2 border rounded-xl"
+                    />
+                    <button
+                      onClick={() => removeDetail("projects", idx, dIdx)}
+                      className="px-3 py-1 text-red-600 border border-red-600 rounded-lg"
+                    >
+                      X
+                    </button>
+                  </div>
+                ))}
+                <button
+                  onClick={() => addDetail("projects", idx)}
+                  className="px-3 py-1 bg-blue-600 text-white rounded-lg"
+                >
+                  Add Detail
+                </button>
+                <button
+                  onClick={() => removeProject(idx)}
+                  className="px-4 py-1 text-red-600 border border-red-600 rounded-lg mt-2"
+                >
+                  Remove Project
+                </button>
+              </div>
+            ))}
+            <button
+              onClick={addProject}
+              className="px-4 py-2 mt-2 bg-green-600 text-white rounded-lg"
+            >
+              Add Project
+            </button>
+          </div>
         </div>
-      </div>
-      <div className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-2xl shadow-xl p-6">Editor Panel</div>
-        </div>
+
+        {/* Preview */}
         <div className="lg:col-span-2">
           <div className="bg-white rounded-2xl shadow-2xl p-6">
             <h1 className="text-2xl font-bold">{resume.name}</h1>
             <p className="text-gray-700 mt-2">{resume.summary}</p>
             <p className="mt-1 text-sm text-gray-600">{resume.contact.email}</p>
+            <div className="mt-4">
+              <h2 className="font-semibold text-lg">Education</h2>
+              {resume.education.map((edu, idx) => (
+                <div key={idx} className="mt-2">
+                  <p className="font-semibold">{edu.degree} – {edu.school}</p>
+                  <p className="text-sm">{edu.gpa} | {edu.period}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4">
+              <h2 className="font-semibold text-lg">Experience</h2>
+              {resume.experience.map((exp, idx) => (
+                <div key={idx} className="mt-2">
+                  <p className="font-semibold">{exp.title} | {exp.period}</p>
+                  <ul className="list-disc list-inside">
+                    {exp.details.map((d, i) => <li key={i}>{d}</li>)}
+                  </ul>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4">
+              <h2 className="font-semibold text-lg">Projects</h2>
+              {resume.projects.map((proj, idx) => (
+                <div key={idx} className="mt-2">
+                  <p className="font-semibold">{proj.title} | <a href={proj.link} className="text-blue-600">{proj.link}</a></p>
+                  <ul className="list-disc list-inside">
+                    {proj.details.map((d, i) => <li key={i}>{d}</li>)}
+                  </ul>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-
       </div>
     </div>
   );
