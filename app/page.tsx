@@ -1,6 +1,8 @@
 "use client";
 import { useState, useRef, ChangeEvent } from "react";
 import { Download, Plus, Trash2, Mail, Phone, MapPin, Globe, Linkedin, Github, AlertCircle } from "lucide-react";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 interface Contact {
   location: string;
@@ -284,27 +286,101 @@ export default function Home() {
     setResume({ ...resume, [section]: updated });
   };
 
-  const handleDownloadPDF = () => {
-    if (!validateAll()) {
-      alert("Please fix all validation errors before downloading the resume.");
-      return;
-    }
-    window.print();
+  const downloadPDF = () => {
+    const pdf = new jsPDF("p", "mm", "a4");
+    let y = 10;
+
+    pdf.setFontSize(22);
+    pdf.setFont("helvetica", "bold");
+    pdf.text(resume.name, 105, y, { align: "center" });
+    y += 10;
+
+    pdf.setFontSize(10);
+    pdf.setFont("helvetica", "normal");
+    const contactInfo = [
+      `Location: ${resume.contact.location}`,
+      `Email: ${resume.contact.email}`,
+      `Phone: ${resume.contact.phone}`,
+      `Website: ${resume.contact.website}`,
+      `LinkedIn: ${resume.contact.linkedin}`,
+      `GitHub: ${resume.contact.github}`,
+    ];
+    contactInfo.forEach((line) => {
+      pdf.text(line, 10, y);
+      y += 5;
+    });
+    y += 5;
+    pdf.setFontSize(12);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("Professional Summary", 10, y);
+    y += 6;
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(10);
+    const splitSummary = pdf.splitTextToSize(resume.summary, 190);
+    pdf.text(splitSummary, 10, y);
+    y += splitSummary.length * 5 + 5;
+
+    pdf.setFont("helvetica", "bold");
+    pdf.text("Education", 10, y);
+    y += 6;
+    pdf.setFont("helvetica", "normal");
+    resume.education.forEach((edu) => {
+      pdf.text(`${edu.degree} - ${edu.school}`, 10, y);
+      pdf.text(`${edu.period}`, 160, y, { align: "right" });
+      y += 5;
+      if (edu.gpa) {
+        pdf.text(`GPA: ${edu.gpa}`, 10, y);
+        y += 5;
+      }
+      y += 2;
+    });
+
+    pdf.setFont("helvetica", "bold");
+    pdf.text("Experience", 10, y);
+    y += 6;
+    pdf.setFont("helvetica", "normal");
+    resume.experience.forEach((exp) => {
+      pdf.text(`${exp.title}`, 10, y);
+      pdf.text(`${exp.period}`, 160, y, { align: "right" });
+      y += 5;
+      exp.details.forEach((d) => {
+        pdf.text(`- ${d}`, 12, y);
+        y += 5;
+      });
+      y += 2;
+    });
+
+    pdf.setFont("helvetica", "bold");
+    pdf.text("Projects", 10, y);
+    y += 6;
+    pdf.setFont("helvetica", "normal");
+    resume.projects.forEach((proj) => {
+      pdf.text(proj.title, 10, y);
+      pdf.text(proj.link, 10, y + 5);
+      y += 10;
+      proj.details.forEach((d) => {
+        pdf.text(`- ${d}`, 12, y);
+        y += 5;
+      });
+      y += 2;
+    });
+
+    pdf.save("Resume.pdf");
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div className="min-h-screen bg-white">
       <div className="bg-white shadow-sm border-b border-gray-200 print:hidden">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold bg-purple-800 bg-clip-text text-transparent">
               Resume Builder
             </h1>
             <p className="text-sm text-gray-600 mt-1">Create your professional resume in minutes</p>
           </div>
           <button
-            onClick={handleDownloadPDF}
-            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+            onClick={downloadPDF}
+            className="flex items-center gap-2 bg-purple-800 text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
           >
             <Download className="w-5 h-5" />
             Download PDF
@@ -316,11 +392,11 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-1 print:hidden">
             <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden sticky top-8">
-              <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6">
+              <div className="bg-purple-800 p-6">
                 <h2 className="text-xl font-bold text-white">Edit Your Resume</h2>
                 <p className="text-blue-100 text-sm mt-1">Fill in your information below</p>
               </div>
-              
+
               <div className="p-6 max-h-[calc(100vh-200px)] overflow-y-auto space-y-6">
                 <div className="space-y-4">
                   <h3 className="font-semibold text-gray-900 text-lg border-b pb-2">Personal Information</h3>
@@ -329,9 +405,8 @@ export default function Home() {
                     value={resume.name}
                     onChange={(e) => handleChange("name", e.target.value)}
                     placeholder="Full Name"
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-400 ${
-                      errors.name ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-400 ${errors.name ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"
+                      }`}
                   />
                   {errors.name && (
                     <div className="flex items-center gap-1 text-red-600 text-xs mt-1">
@@ -339,7 +414,7 @@ export default function Home() {
                       <span>{errors.name}</span>
                     </div>
                   )}
-                  
+
                   {Object.entries(resume.contact).map(([key, value]) => (
                     <div key={key}>
                       <input
@@ -347,9 +422,8 @@ export default function Home() {
                         value={value}
                         onChange={(e) => handleChange(`contact.${key}`, e.target.value)}
                         placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
-                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-400 ${
-                          errors[`contact.${key}`] ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"
-                        }`}
+                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-400 ${errors[`contact.${key}`] ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"
+                          }`}
                       />
                       {errors[`contact.${key}`] && (
                         <div className="flex items-center gap-1 text-red-600 text-xs mt-1">
@@ -359,16 +433,15 @@ export default function Home() {
                       )}
                     </div>
                   ))}
-                  
+
                   <div>
                     <textarea
                       value={resume.summary}
                       onChange={(e) => handleChange("summary", e.target.value)}
                       placeholder="Professional Summary (minimum 50 characters)"
                       rows={4}
-                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none text-gray-900 placeholder-gray-400 ${
-                        errors.summary ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"
-                      }`}
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none text-gray-900 placeholder-gray-400 ${errors.summary ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"
+                        }`}
                     />
                     <div className="flex items-center justify-between mt-1">
                       {errors.summary && (
@@ -408,9 +481,8 @@ export default function Home() {
                         placeholder="School"
                         value={edu.school}
                         onChange={(e) => handleListChange("education", idx, "school", e.target.value)}
-                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 ${
-                          errors[`education.${idx}.school`] ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"
-                        }`}
+                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 ${errors[`education.${idx}.school`] ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"
+                          }`}
                       />
                       {errors[`education.${idx}.school`] && (
                         <div className="flex items-center gap-1 text-red-600 text-xs">
@@ -423,9 +495,8 @@ export default function Home() {
                         placeholder="Degree"
                         value={edu.degree}
                         onChange={(e) => handleListChange("education", idx, "degree", e.target.value)}
-                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 ${
-                          errors[`education.${idx}.degree`] ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"
-                        }`}
+                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 ${errors[`education.${idx}.degree`] ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"
+                          }`}
                       />
                       {errors[`education.${idx}.degree`] && (
                         <div className="flex items-center gap-1 text-red-600 text-xs">
@@ -445,9 +516,8 @@ export default function Home() {
                         placeholder="Period"
                         value={edu.period}
                         onChange={(e) => handleListChange("education", idx, "period", e.target.value)}
-                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 ${
-                          errors[`education.${idx}.period`] ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"
-                        }`}
+                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 ${errors[`education.${idx}.period`] ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"
+                          }`}
                       />
                       {errors[`education.${idx}.period`] && (
                         <div className="flex items-center gap-1 text-red-600 text-xs">
@@ -484,9 +554,8 @@ export default function Home() {
                         placeholder="Job Title & Company"
                         value={exp.title}
                         onChange={(e) => handleListChange("experience", idx, "title", e.target.value)}
-                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 ${
-                          errors[`experience.${idx}.title`] ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"
-                        }`}
+                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 ${errors[`experience.${idx}.title`] ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"
+                          }`}
                       />
                       {errors[`experience.${idx}.title`] && (
                         <div className="flex items-center gap-1 text-red-600 text-xs">
@@ -499,9 +568,8 @@ export default function Home() {
                         placeholder="Period"
                         value={exp.period}
                         onChange={(e) => handleListChange("experience", idx, "period", e.target.value)}
-                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 ${
-                          errors[`experience.${idx}.period`] ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"
-                        }`}
+                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 ${errors[`experience.${idx}.period`] ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"
+                          }`}
                       />
                       {errors[`experience.${idx}.period`] && (
                         <div className="flex items-center gap-1 text-red-600 text-xs">
@@ -563,9 +631,8 @@ export default function Home() {
                         placeholder="Project Title"
                         value={proj.title}
                         onChange={(e) => handleListChange("projects", idx, "title", e.target.value)}
-                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 ${
-                          errors[`projects.${idx}.title`] ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"
-                        }`}
+                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 ${errors[`projects.${idx}.title`] ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"
+                          }`}
                       />
                       {errors[`projects.${idx}.title`] && (
                         <div className="flex items-center gap-1 text-red-600 text-xs">
@@ -578,9 +645,8 @@ export default function Home() {
                         placeholder="Project Link"
                         value={proj.link}
                         onChange={(e) => handleListChange("projects", idx, "link", e.target.value)}
-                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 ${
-                          errors[`projects.${idx}.link`] ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"
-                        }`}
+                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 ${errors[`projects.${idx}.link`] ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"
+                          }`}
                       />
                       {errors[`projects.${idx}.link`] && (
                         <div className="flex items-center gap-1 text-red-600 text-xs">
@@ -620,10 +686,12 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden print:shadow-none print:border-0 print:rounded-none">
-              <div ref={resumeRef} className="p-12 print:p-8">
-           
+          <div className="lg:col-span-2 w-full">
+            <div className="bg-white rounded-2xl w-full shadow-2xl border border-gray-200 overflow-hidden print:shadow-none print:border-0 print:rounded-none">
+              <div
+                ref={resumeRef}
+                className="w-full  bg-white shadow-lg  rounded-lg p-6 space-y-4"
+              >
                 <div className="text-center mb-8 pb-6 border-b-2 border-gray-900">
                   <h1 className="text-4xl font-bold text-gray-900 mb-3">{resume.name}</h1>
                   <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-700">
