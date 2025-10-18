@@ -15,7 +15,7 @@ A modern, responsive **Resume Builder** built with **Next.js**, and **Tailwind C
 
 - ✅ Add, edit, and delete personal details, education, experience, and projects  
 - ✅ Real-time preview of resume content  
-- ✅ Download resume as **PDF** using `jsPDF` & `html2canvas`  
+- ✅ Download resume as **PDF** using `jsPDF` 
 - ✅ Fully **responsive UI** built with Tailwind CSS  
 - ✅ Minimal, intuitive, and elegant design  
 - ✅ Modular and reusable components  
@@ -30,7 +30,7 @@ A modern, responsive **Resume Builder** built with **Next.js**, and **Tailwind C
 | **Language** | TypeScript |
 | **Styling** | Tailwind CSS |
 | **Icons** | Lucide Icons |
-| **PDF Export** | jsPDF, html2canvas |
+| **PDF Export** | jsPDF |
 
 ---
 
