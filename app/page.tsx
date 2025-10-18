@@ -1,8 +1,7 @@
 "use client";
 import { useState, useRef, ChangeEvent } from "react";
 import { Download, Plus, Trash2, Mail, Phone, MapPin, Globe, Linkedin, Github, AlertCircle } from "lucide-react";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
 
 interface Contact {
   location: string;
@@ -373,14 +372,14 @@ export default function Home() {
       <div className="bg-white shadow-sm border-b border-gray-200 print:hidden">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold bg-purple-800 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold bg-blue-500 bg-clip-text text-transparent">
               Resume Builder
             </h1>
             <p className="text-sm text-gray-600 mt-1">Create your professional resume in minutes</p>
           </div>
           <button
             onClick={downloadPDF}
-            className="flex items-center gap-2 bg-purple-800 text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+            className="flex items-center gap-2 bg-blue-800 text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
           >
             <Download className="w-5 h-5" />
             Download PDF
@@ -392,7 +391,7 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-1 print:hidden">
             <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden sticky top-8">
-              <div className="bg-purple-800 p-6">
+              <div className="bg-blue-800 p-6">
                 <h2 className="text-xl font-bold text-white">Edit Your Resume</h2>
                 <p className="text-blue-100 text-sm mt-1">Fill in your information below</p>
               </div>
