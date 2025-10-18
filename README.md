@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🧾 Resume Builder
 
-## Getting Started
+A modern, responsive **Resume Builder** built with **Next.js**, and **Tailwind CSS**, allowing users to create, edit, and download their resumes as professional PDFs.
 
-First, run the development server:
+---
 
-```bash
+## 🚀 Live Demo
+
+🔗 **Vercel Link:** [https://zidio-assignment.vercel.app/](https://zidio-assignment.vercel.app/)
+🔗 **GitHub Repository:** [https://github.com/tarupathak/Zidio-Assignmen](https://github.com/tarupathak/Zidio-Assignmen)
+
+---
+
+## 📌 Features
+
+- ✅ Add, edit, and delete personal details, education, experience, and projects  
+- ✅ Real-time preview of resume content  
+- ✅ Download resume as **PDF** using `jsPDF` & `html2canvas`  
+- ✅ Fully **responsive UI** built with Tailwind CSS  
+- ✅ Minimal, intuitive, and elegant design  
+- ✅ Modular and reusable components  
+
+---
+
+## 🛠️ Tech Stack
+
+| Category | Technologies Used |
+|-----------|-------------------|
+| **Framework** | Next.js (React) |
+| **Language** | TypeScript |
+| **Styling** | Tailwind CSS |
+| **Icons** | Lucide Icons |
+| **PDF Export** | jsPDF, html2canvas |
+
+---
+
+## ⚙️ Installation & Setup
+
+### 1️⃣ Clone the repository
+
+git clone [https://github.com/yourusername/resume-builder.git](https://github.com/tarupathak/Zidio-Assignment)
+cd zidio-assignment
+
+### 2️⃣ Install dependencies
+
+npm install
+
+### 3️⃣ Run the development server
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Now open http://localhost:3000 to view it in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🧠 Approach & Contribution
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The Resume Builder was designed to provide a user-friendly interface for creating professional resumes with customizable sections.
+Users can dynamically manage data and export a print-ready PDF without affecting layout or design.
 
-## Learn More
+This module can integrate into larger systems to support profile creation, job applications, or career portals, enhancing both functionality and user experience.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
